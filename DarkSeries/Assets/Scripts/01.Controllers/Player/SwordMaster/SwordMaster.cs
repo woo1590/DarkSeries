@@ -17,12 +17,11 @@ public class SwordMaster : Player
         base.Awake();
 
         animationData.Initialize();
-        InitializeStates();
     }
 
     protected override void Start()
     {
-        
+        InitializeStates();
     }
 
     protected override void Update()
