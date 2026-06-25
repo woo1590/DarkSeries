@@ -7,7 +7,8 @@ public class PlayerInputController : MonoBehaviour
 
     private void Awake()
     {
-        
+        inputActions = new PlayerActionMap();
+        playerActions = inputActions.Player;
     }
 
     private void OnEnable()
