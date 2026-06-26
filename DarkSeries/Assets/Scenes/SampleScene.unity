@@ -453,7 +453,8 @@ GameObject:
   - component: {fileID: 2116023998}
   - component: {fileID: 2116023997}
   - component: {fileID: 2116024000}
-  - component: {fileID: 2116024001}
+  - component: {fileID: 2116024002}
+  - component: {fileID: 2116024003}
   m_Layer: 0
   m_Name: SwordMaster
   m_TagString: Untagged
@@ -639,8 +640,9 @@ MonoBehaviour:
     walkParamName: Walk
     runParamName: Run
     runFastParamName: RunFast
+    slashParamName: Slash
   <playerData>k__BackingField: {fileID: 11400000, guid: 6c2b9950d459e88459631c678ea7055b, type: 2}
---- !u!114 &2116024001
+--- !u!114 &2116024002
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -649,7 +651,19 @@ MonoBehaviour:
   m_GameObject: {fileID: 2116023993}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2e58bd603f663fb4e94c49039e455938, type: 3}
+  m_Script: {fileID: 11500000, guid: 1fd1004c4c6d0ae47ba0879d680ab65c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerMoveController
+--- !u!114 &2116024003
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2116023993}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d2500bfd5dfc41442a5cac7c0c6ea399, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerInputController
 --- !u!1660057539 &9223372036854775807
