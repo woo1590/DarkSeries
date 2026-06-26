@@ -5,16 +5,16 @@ public class Player : MonoBehaviour
 {
     public SpriteRenderer sprite { get; private set; }
     public Animator animator { get; private set; }
-    public Rigidbody2D rigid { get; private set; }
+    public PlayerMoveController moveController { get; private set; }
     public PlayerInputController inputController { get; private set; }
 
-    public Vector2 movementInput { get; set; }
+    private int facingDirection;
 
     protected virtual void Awake()
     {
         sprite = GetComponent<SpriteRenderer>();
         animator = GetComponent<Animator>();
-        rigid = GetComponent<Rigidbody2D>();
+        moveController = GetComponent<PlayerMoveController>();
         inputController = GetComponent<PlayerInputController>();
     }
 
@@ -36,5 +36,14 @@ public class Player : MonoBehaviour
     protected virtual void FixedUpdate()
     {
         
+    }
+
+    public void UpdateFacing(float moveX)
+    {
+        if (Mathf.Abs(moveX) < 0.001f)
+            return;
+
+        facingDirection = moveX < 0f ? -1 : 1;
+        sprite.flipX = facingDirection < 0;
     }
 }

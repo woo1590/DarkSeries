@@ -26,7 +26,7 @@ public class SwordMaster : Player
 
     protected override void Update()
     {
-        stateMachine.HandleInput();
+        inputController.HandleInput();
         stateMachine.Update();
     }
 

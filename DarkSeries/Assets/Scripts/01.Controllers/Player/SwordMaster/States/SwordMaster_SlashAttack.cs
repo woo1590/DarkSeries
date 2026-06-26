@@ -5,10 +5,12 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-public class SwordMaster_Slash1 : SwordMaster_BaseState
+public class SwordMaster_SlashAttack : SwordMaster_BaseState
 {
-    public SwordMaster_Slash1(StateMachine<SwordMaster> stateMachine)
+    public SwordMaster_SlashAttack(StateMachine<SwordMaster> stateMachine)
         : base(stateMachine) { }
+
+    int comboIndex;
 
     public override void Enter()
     {
@@ -27,10 +29,6 @@ public class SwordMaster_Slash1 : SwordMaster_BaseState
     }
 
     public override void FixedUpdate()
-    {
-    }
-
-    public override void HandleInput()
     {
     }
 

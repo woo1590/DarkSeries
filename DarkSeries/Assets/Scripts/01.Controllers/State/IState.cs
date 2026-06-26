@@ -14,8 +14,7 @@ public abstract class IState<T>
     }
 
     public abstract void Enter();
-    public abstract void Exit() ;
-    public abstract void HandleInput() ;
+    public abstract void Exit();
     public abstract void Update();
     public abstract void LateUpdate();
     public abstract void FixedUpdate();

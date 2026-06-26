@@ -35,10 +35,6 @@ public class StateMachine<T>
         states[state.GetType()] = state;
     }
 
-    public void HandleInput()
-    {
-        currState.HandleInput();
-    }
     public void Update()
     {
         currState.Update();

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.AdaptivePerformance;
 using UnityEngine.InputSystem;
 
 public class SwordMaster_Walk : SwordMaster_BaseState
@@ -15,23 +16,28 @@ public class SwordMaster_Walk : SwordMaster_BaseState
     {
         base.Enter();
 
-        SwordMasterAnimData animData = stateMachine.owner.animationData;
+        SwordMaster owner = stateMachine.owner;
+        PlayerData playerData = owner.playerData;
+        PlayerMoveController moveController = owner.moveController;
+        SwordMasterAnimData animData = owner.animationData;
+
         stateMachine.owner.animator.SetBool(animData.walkParamHash, true);
+        moveController.moveSpeed = playerData.baseSpeed * playerData.walkSpeedModifier;
     }
 
     public override void Exit()
     {
         base.Exit();
 
-        SwordMasterAnimData animData = stateMachine.owner.animationData;
+        SwordMaster owner = stateMachine.owner;
+        PlayerData playerData = owner.playerData;
+        PlayerMoveController moveController = owner.moveController;
+        SwordMasterAnimData animData = owner.animationData;
+
         stateMachine.owner.animator.SetBool(animData.walkParamHash, false);
     }
 
     public override void FixedUpdate()
-    {
-    }
-
-    public override void HandleInput()
     {
     }
 
@@ -41,6 +47,11 @@ public class SwordMaster_Walk : SwordMaster_BaseState
 
     public override void Update()
     {
+        SwordMaster owner = stateMachine.owner;
+        float direction = owner.inputController.movementInput.x;
+
+        owner.moveController.Move(direction);
+        owner.UpdateFacing(direction);
     }
 
     protected override void OnMovementCanceled(InputAction.CallbackContext context)

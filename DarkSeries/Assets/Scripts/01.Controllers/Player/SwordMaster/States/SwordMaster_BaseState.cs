@@ -18,7 +18,6 @@ public class SwordMaster_BaseState : IState<SwordMaster>
     }
 
     public override void FixedUpdate() { }
-    public override void HandleInput() { }
     public override void LateUpdate() { }
     public override void Update() { }
 

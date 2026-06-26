@@ -11,8 +11,13 @@ public class SwordMaster_Idle : SwordMaster_BaseState
     {
         base.Enter();
 
-        SwordMasterAnimData animData = stateMachine.owner.animationData;
-        stateMachine.owner.animator.SetBool(animData.idleParamHash,true);
+        SwordMaster owner = stateMachine.owner;
+        PlayerData playerData = owner.playerData;
+        PlayerMoveController moveController = owner.moveController;
+        SwordMasterAnimData animData = owner.animationData;
+
+        owner.animator.SetBool(animData.idleParamHash,true);
+        owner.moveController.Move(0f);
     }
 
     public override void Exit()
@@ -24,10 +29,6 @@ public class SwordMaster_Idle : SwordMaster_BaseState
     }
 
     public override void FixedUpdate()
-    {
-    }
-
-    public override void HandleInput()
     {
     }
 
