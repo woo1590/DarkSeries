@@ -40,4 +40,6 @@ public class SwordMaster_BaseState : IState<SwordMaster>
 
     protected virtual void OnMovementStarted(InputAction.CallbackContext context) { }
     protected virtual void OnMovementCanceled(InputAction.CallbackContext context) { }
+    protected virtual void OnAttackStarted(InputAction.CallbackContext context) { }
+    protected virtual void OnAttackCanceled(InputAction.CallbackContext context) { }
 }

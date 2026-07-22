@@ -13,12 +13,14 @@ public class SwordMasterAnimData
     [SerializeField] private string runParamName = "Run";
     [SerializeField] private string runFastParamName = "RunFast";
     [SerializeField] private string slashParamName = "Slash";
+    [SerializeField] private string attackParamName = "Attack";
 
     public int idleParamHash {  get; private set; }
     public int walkParamHash { get; private set ; }
     public int runParamHash { get; private set ; }
     public int runFastParamHash { get;private set ; }   
     public int slashParamHash { get; private set ; }
+    public int attackParamHash { get; private set ; }
 
     public void Initialize()
     {
@@ -27,5 +29,6 @@ public class SwordMasterAnimData
         runParamHash = Animator.StringToHash(runParamName);
         runFastParamHash = Animator.StringToHash(runFastParamName);
         slashParamHash = Animator.StringToHash(slashParamName);
+        attackParamHash = Animator.StringToHash(attackParamName);
     }
 }

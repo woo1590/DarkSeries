@@ -17,7 +17,7 @@ public class SwordMaster_SlashAttack : SwordMaster_BaseState
         base.Enter();
 
         SwordMasterAnimData animData = stateMachine.owner.animationData;
-        stateMachine.owner.animator.SetBool(animData.slashParamHash, true);
+        stateMachine.owner.animator.SetBool(animData.attackParamHash, true);
     }
 
     public override void Exit()
@@ -25,7 +25,7 @@ public class SwordMaster_SlashAttack : SwordMaster_BaseState
         base.Exit();
 
         SwordMasterAnimData animData = stateMachine.owner.animationData;
-        stateMachine.owner.animator.SetBool(animData.slashParamHash, false);
+        stateMachine.owner.animator.SetBool(animData.attackParamHash, false);
     }
 
     public override void FixedUpdate()

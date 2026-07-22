@@ -449,12 +449,12 @@ GameObject:
   m_Component:
   - component: {fileID: 2116023996}
   - component: {fileID: 2116023995}
-  - component: {fileID: 2116023994}
   - component: {fileID: 2116023998}
   - component: {fileID: 2116023997}
   - component: {fileID: 2116024000}
   - component: {fileID: 2116024002}
   - component: {fileID: 2116024003}
+  - component: {fileID: 2116024004}
   m_Layer: 0
   m_Name: SwordMaster
   m_TagString: Untagged
@@ -462,28 +462,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!95 &2116023994
-Animator:
-  serializedVersion: 7
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2116023993}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 4b9130769d4b6534985a63d921f37978, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_AnimatePhysics: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorStateOnDisable: 0
-  m_WriteDefaultValuesOnDisable: 0
 --- !u!212 &2116023995
 SpriteRenderer:
   serializedVersion: 3
@@ -533,7 +511,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 4736215876436352664, guid: e7d9b04f3758d134693b3c6a1eefc74d, type: 3}
+  m_Sprite: {fileID: 4736215876436352664, guid: b5169efbb8eb72141825699a5ac8820e, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -641,6 +619,7 @@ MonoBehaviour:
     runParamName: Run
     runFastParamName: RunFast
     slashParamName: Slash
+    attackParamName: Attack
   <playerData>k__BackingField: {fileID: 11400000, guid: 6c2b9950d459e88459631c678ea7055b, type: 2}
 --- !u!114 &2116024002
 MonoBehaviour:
@@ -666,6 +645,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d2500bfd5dfc41442a5cac7c0c6ea399, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerInputController
+--- !u!95 &2116024004
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2116023993}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 830ea1e53c9c7cd4bbb25d8eee2becea, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
