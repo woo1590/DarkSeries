@@ -5,7 +5,7 @@ using UnityEngine;
 public class StateMachine<T>
 {
     public T owner { get; private set; }
-    protected IState<T> currState;
+    public IState<T> currState { get; private set; }
     Dictionary<Type,IState<T>> states = new();
 
     public StateMachine(T owner)

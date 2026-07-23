@@ -18,4 +18,7 @@ public abstract class IState<T>
     public abstract void Update();
     public abstract void LateUpdate();
     public abstract void FixedUpdate();
+    
+    /* Call back */
+    public virtual void OnAnimationEnd() { }
 }

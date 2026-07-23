@@ -8,14 +8,16 @@ public class SwordMaster : Player
     [field: SerializeField] public SwordMasterAnimData animationData { get; private set; }
 
     [field: Header("Data")]
-    [field: SerializeField]public PlayerData playerData { get; private set; }
+    [field: SerializeField] public PlayerData playerData { get; private set; }
 
+    public SwordMasterAttackController attackController { get; private set; }
     private StateMachine<SwordMaster> stateMachine;
     
     protected override void Awake()
     {
         base.Awake();
 
+        attackController = GetComponent<SwordMasterAttackController>();
         animationData.Initialize();
     }
 
@@ -46,6 +48,12 @@ public class SwordMaster : Player
 
         stateMachine.AddState(new SwordMaster_Idle(stateMachine));
         stateMachine.AddState(new SwordMaster_Walk(stateMachine));
+        stateMachine.AddState(new SwordMaster_SlashAttack(stateMachine));
         stateMachine.ChangeState<SwordMaster_Idle>();
+    }
+
+    public void OnAnimationEnd()
+    {
+        stateMachine.currState.OnAnimationEnd();
     }
 }

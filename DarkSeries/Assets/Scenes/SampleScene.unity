@@ -449,12 +449,13 @@ GameObject:
   m_Component:
   - component: {fileID: 2116023996}
   - component: {fileID: 2116023995}
+  - component: {fileID: 2116024004}
   - component: {fileID: 2116023998}
   - component: {fileID: 2116023997}
   - component: {fileID: 2116024000}
   - component: {fileID: 2116024002}
   - component: {fileID: 2116024003}
-  - component: {fileID: 2116024004}
+  - component: {fileID: 2116024005}
   m_Layer: 0
   m_Name: SwordMaster
   m_TagString: Untagged
@@ -618,7 +619,6 @@ MonoBehaviour:
     walkParamName: Walk
     runParamName: Run
     runFastParamName: RunFast
-    slashParamName: Slash
     attackParamName: Attack
   <playerData>k__BackingField: {fileID: 11400000, guid: 6c2b9950d459e88459631c678ea7055b, type: 2}
 --- !u!114 &2116024002
@@ -667,6 +667,18 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &2116024005
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2116023993}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 116b96cbefe3fa548a533412ba49b932, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SwordMasterAttackController
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
