@@ -49,4 +49,9 @@ public class SwordMaster_Idle : SwordMaster_BaseState
     {
         stateMachine.ChangeState<SwordMaster_SlashAttack>();
     }
+
+    protected override void OnJumpStatred(InputAction.CallbackContext context)
+    {
+        stateMachine.ChangeState<SwordMaster_Jump>();
+    }
 }

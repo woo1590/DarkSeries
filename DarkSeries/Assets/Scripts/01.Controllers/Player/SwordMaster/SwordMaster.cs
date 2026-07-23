@@ -49,6 +49,11 @@ public class SwordMaster : Player
         stateMachine.AddState(new SwordMaster_Idle(stateMachine));
         stateMachine.AddState(new SwordMaster_Walk(stateMachine));
         stateMachine.AddState(new SwordMaster_SlashAttack(stateMachine));
+        stateMachine.AddState(new SwordMaster_Jump(stateMachine));
+        stateMachine.AddState(new SwordMaster_JumpToFall(stateMachine));
+        stateMachine.AddState(new SwordMaster_Fall(stateMachine));
+        stateMachine.AddState(new SwordMaster_Land(stateMachine));
+
         stateMachine.ChangeState<SwordMaster_Idle>();
     }
 

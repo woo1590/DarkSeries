@@ -13,5 +13,7 @@ MonoBehaviour:
   m_Name: SwordMasterData
   m_EditorClassIdentifier: Assembly-CSharp::PlayerData
   <baseSpeed>k__BackingField: 5
+  <baseJumpPower>k__BackingField: 5
   <walkSpeedModifier>k__BackingField: 0.225
   <runSpeedModifier>k__BackingField: 1
+  <jumpPowerModifier>k__BackingField: 1

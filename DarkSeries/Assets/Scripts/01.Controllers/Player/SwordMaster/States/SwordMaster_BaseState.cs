@@ -30,6 +30,7 @@ public class SwordMaster_BaseState : IState<SwordMaster>
         input.playerActions.Movement.canceled += OnMovementCanceled;
         input.playerActions.Attack.started += OnAttackStarted;
         input.playerActions.Attack.canceled += OnAttackCanceled;
+        input.playerActions.Jump.started += OnJumpStatred;
     }
 
     protected virtual void RemoveInputActionCallBacks()
@@ -40,10 +41,12 @@ public class SwordMaster_BaseState : IState<SwordMaster>
         input.playerActions.Movement.canceled -= OnMovementCanceled;
         input.playerActions.Attack.started -= OnAttackStarted;
         input.playerActions.Attack.canceled -= OnAttackCanceled;
+        input.playerActions.Jump.started -= OnJumpStatred;
     }
 
     protected virtual void OnMovementStarted(InputAction.CallbackContext context) { }
     protected virtual void OnMovementCanceled(InputAction.CallbackContext context) { }
     protected virtual void OnAttackStarted(InputAction.CallbackContext context) { }
     protected virtual void OnAttackCanceled(InputAction.CallbackContext context) { }
+    protected virtual void OnJumpStatred(InputAction.CallbackContext context) { }
 }
