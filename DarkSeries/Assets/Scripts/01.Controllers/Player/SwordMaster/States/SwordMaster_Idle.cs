@@ -17,7 +17,6 @@ public class SwordMaster_Idle : SwordMaster_BaseState
         SwordMasterAnimData animData = owner.animationData;
 
         owner.animator.SetBool(animData.idleParamHash,true);
-        owner.moveController.Move(0f);
     }
 
     public override void Exit()
@@ -38,11 +37,18 @@ public class SwordMaster_Idle : SwordMaster_BaseState
 
     public override void Update()
     {
-    }
+        PlayerMoveController moveController = stateMachine.owner.moveController;
+        PlayerInputController inputController = stateMachine.owner.inputController;
 
-    protected override void OnMovementStarted(InputAction.CallbackContext context)
-    {
-        stateMachine.ChangeState<SwordMaster_Walk>();
+        if(!moveController.isGrounded)
+        {
+            stateMachine.ChangeState<SwordMaster_JumpToFall>();
+        }
+
+        if (inputController.movementInput.sqrMagnitude >= 0.01f) 
+        {
+            stateMachine.ChangeState<SwordMaster_Walk>();
+        }
     }
 
     protected override void OnAttackStarted(InputAction.CallbackContext context)
@@ -53,5 +59,10 @@ public class SwordMaster_Idle : SwordMaster_BaseState
     protected override void OnJumpStatred(InputAction.CallbackContext context)
     {
         stateMachine.ChangeState<SwordMaster_Jump>();
+    }
+
+    protected override void OnCrouchStarted(InputAction.CallbackContext context)
+    {
+        stateMachine.ChangeState<SwordMaster_CrouchStart>();
     }
 }

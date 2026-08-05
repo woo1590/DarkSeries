@@ -50,8 +50,11 @@ public class SwordMaster_Walk : SwordMaster_BaseState
         SwordMaster owner = stateMachine.owner;
         float direction = owner.inputController.movementInput.x;
 
-        owner.moveController.Move(direction);
-        owner.UpdateFacing(direction);
+        if (!owner.moveController.isGrounded)
+        {
+            stateMachine.ChangeState<SwordMaster_JumpToFall>();
+        }
+
     }
 
     protected override void OnMovementCanceled(InputAction.CallbackContext context)
@@ -62,5 +65,10 @@ public class SwordMaster_Walk : SwordMaster_BaseState
     protected override void OnAttackStarted(InputAction.CallbackContext context)
     {
         stateMachine.ChangeState<SwordMaster_SlashAttack>();
+    }
+
+    protected override void OnJumpStatred(InputAction.CallbackContext context)
+    {
+        stateMachine.ChangeState<SwordMaster_Jump>();
     }
 }

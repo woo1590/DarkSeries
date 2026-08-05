@@ -4,7 +4,7 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody2D))]
 public class PlayerMoveController : MonoBehaviour
 {
-    private Vector2 groundCheckSize = new Vector2(0.6f, 0.1f);
+    private Vector2 groundCheckSize = new Vector2(0.3f, 0.1f);
     private Vector2 groundCheckOffset = new Vector2(0f,-0.5f);
     public bool isGrounded { get; private set; }
 

@@ -24,7 +24,7 @@ public class SwordMaster_SlashAttack : SwordMaster_BaseState
 
         stateMachine.owner.animator.SetInteger(comboIndexHash, comboIndex);
         stateMachine.owner.animator.SetBool(animData.attackParamHash, true);
-
+        stateMachine.owner.moveController.moveSpeed = 0f;
     }
 
     public override void Exit()

@@ -681,7 +681,11 @@ MonoBehaviour:
     runParamName: Run
     runFastParamName: RunFast
     attackParamName: Attack
-    onGroundParamName: OnGround
+    isGroundParamName: IsGround
+    startFallParamName: StartFall
+    fallParamName: Fall
+    landParamName: Land
+    crouchParamName: Crouch
   <playerData>k__BackingField: {fileID: 11400000, guid: 6c2b9950d459e88459631c678ea7055b, type: 2}
 --- !u!114 &2116024002
 MonoBehaviour:
@@ -695,8 +699,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1fd1004c4c6d0ae47ba0879d680ab65c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMoveController
-  groundCheckSize: {x: 0.6, y: 0.1}
-  isGrounded: 0
 --- !u!114 &2116024003
 MonoBehaviour:
   m_ObjectHideFlags: 0

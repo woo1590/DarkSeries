@@ -14,11 +14,10 @@ public class SwordMaster_Land : SwordMaster_BaseState
         base.Enter();
 
         SwordMaster owner = stateMachine.owner;
-        PlayerData playerData = owner.playerData;
-        PlayerMoveController moveController = owner.moveController;
         SwordMasterAnimData animData = owner.animationData;
 
         owner.animator.SetBool(animData.isGroundParamHash, true);
+        owner.moveController.moveSpeed = 0f;
     }
 
     public override void Exit()
@@ -40,6 +39,13 @@ public class SwordMaster_Land : SwordMaster_BaseState
 
     public override void OnAnimationEnd()
     {
-        stateMachine.ChangeState<SwordMaster_Idle>();
+        if(stateMachine.owner.inputController.movementInput.sqrMagnitude >= 0.01f)
+        {
+            stateMachine.ChangeState<SwordMaster_Walk>();
+        }
+        else
+        {
+            stateMachine.ChangeState<SwordMaster_Idle>();
+        }
     }
 }

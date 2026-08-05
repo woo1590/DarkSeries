@@ -27,10 +27,17 @@ public class SwordMaster_BaseState : IState<SwordMaster>
         PlayerInputController input = stateMachine.owner.inputController;
 
         input.playerActions.Movement.started += OnMovementStarted;
+        input.playerActions.Movement.performed += OnMovementPerformed;
         input.playerActions.Movement.canceled += OnMovementCanceled;
+
         input.playerActions.Attack.started += OnAttackStarted;
         input.playerActions.Attack.canceled += OnAttackCanceled;
+
         input.playerActions.Jump.started += OnJumpStatred;
+
+        input.playerActions.Crouch.started += OnCrouchStarted;
+        input.playerActions.Crouch.canceled += OnCrouchCanceled;
+
     }
 
     protected virtual void RemoveInputActionCallBacks()
@@ -38,15 +45,28 @@ public class SwordMaster_BaseState : IState<SwordMaster>
         PlayerInputController input = stateMachine.owner.inputController;
 
         input.playerActions.Movement.started -= OnMovementStarted;
+        input.playerActions.Movement.performed -= OnMovementPerformed;
         input.playerActions.Movement.canceled -= OnMovementCanceled;
+
         input.playerActions.Attack.started -= OnAttackStarted;
         input.playerActions.Attack.canceled -= OnAttackCanceled;
+
         input.playerActions.Jump.started -= OnJumpStatred;
+
+        input.playerActions.Crouch.started -= OnCrouchStarted;
+        input.playerActions.Crouch.canceled -= OnCrouchCanceled;
+
     }
 
     protected virtual void OnMovementStarted(InputAction.CallbackContext context) { }
+    protected virtual void OnMovementPerformed(InputAction.CallbackContext context) { }
     protected virtual void OnMovementCanceled(InputAction.CallbackContext context) { }
+
     protected virtual void OnAttackStarted(InputAction.CallbackContext context) { }
     protected virtual void OnAttackCanceled(InputAction.CallbackContext context) { }
+
     protected virtual void OnJumpStatred(InputAction.CallbackContext context) { }
+
+    protected virtual void OnCrouchStarted(InputAction.CallbackContext context) { }
+    protected virtual void OnCrouchCanceled(InputAction.CallbackContext context) { }
 }

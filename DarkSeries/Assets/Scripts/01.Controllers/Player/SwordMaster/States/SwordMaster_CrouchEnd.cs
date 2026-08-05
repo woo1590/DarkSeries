@@ -1,0 +1,43 @@
+﻿using System.Buffers;
+
+using UnityEngine;
+using UnityEngine.InputSystem;
+
+public class SwordMaster_CrouchEnd : SwordMaster_BaseState
+{
+    public SwordMaster_CrouchEnd(StateMachine<SwordMaster> stateMachine)
+        : base(stateMachine) { }
+
+    public override void Enter()
+    {
+        base.Enter();
+
+        SwordMaster owner = stateMachine.owner;
+        SwordMasterAnimData animData = owner.animationData;
+
+        owner.animator.SetBool(animData.crouchParamHash, false);
+    }
+
+    public override void Exit()
+    {
+        base.Exit();
+
+    }
+
+    public override void FixedUpdate()
+    {
+    }
+
+    public override void LateUpdate()
+    {
+    }
+
+    public override void Update()
+    {
+    }
+
+    public override void OnAnimationEnd()
+    {
+        stateMachine.ChangeState<SwordMaster_Idle>();
+    }
+}

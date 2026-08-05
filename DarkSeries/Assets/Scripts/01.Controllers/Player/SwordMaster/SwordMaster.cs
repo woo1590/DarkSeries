@@ -40,6 +40,11 @@ public class SwordMaster : Player
     protected override void FixedUpdate()
     {
         stateMachine.FixedUpdate();
+
+        float direction = inputController.movementInput.x;
+
+        UpdateFacing(direction);
+        moveController.Move(direction);
     }
 
     void InitializeStates()
@@ -53,6 +58,9 @@ public class SwordMaster : Player
         stateMachine.AddState(new SwordMaster_JumpToFall(stateMachine));
         stateMachine.AddState(new SwordMaster_Fall(stateMachine));
         stateMachine.AddState(new SwordMaster_Land(stateMachine));
+        stateMachine.AddState(new SwordMaster_CrouchStart(stateMachine));
+        stateMachine.AddState(new SwordMaster_CrouchHold(stateMachine));
+        stateMachine.AddState(new SwordMaster_CrouchEnd(stateMachine));
 
         stateMachine.ChangeState<SwordMaster_Idle>();
     }
@@ -60,5 +68,35 @@ public class SwordMaster : Player
     public void OnAnimationEnd()
     {
         stateMachine.currState.OnAnimationEnd();
+    }
+
+    /* Debug */
+    private void OnGUI()
+    {
+        if (stateMachine?.currState == null)
+            return;
+
+        string currStateName = stateMachine.currState.GetType().Name;
+        Rect rect = new Rect(10f, 10f, 500f, 100f);
+
+        Color prevBackground = GUI.backgroundColor;
+        Color prevContent = GUI.contentColor;
+
+        GUI.backgroundColor = Color.green;
+        GUI.Box(rect, GUIContent.none);
+
+        GUI.contentColor = Color.black;
+
+        GUIStyle textStyle = new GUIStyle(GUI.skin.label)
+        {
+            alignment = TextAnchor.MiddleCenter,
+            fontSize = 24,
+            fontStyle = FontStyle.Bold
+        };
+
+        GUI.Label(rect, currStateName, textStyle);
+
+        GUI.backgroundColor = prevBackground;
+        GUI.contentColor = prevContent;
     }
 }

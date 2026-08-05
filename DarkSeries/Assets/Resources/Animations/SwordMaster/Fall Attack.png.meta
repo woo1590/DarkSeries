@@ -140,12 +140,12 @@ TextureImporter:
       name: Fall Attack_0
       rect:
         serializedVersion: 2
-        x: 10
+        x: 0
         y: 0
-        width: 33
-        height: 29
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        width: 90
+        height: 37
+      alignment: 9
+      pivot: {x: 0.31, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -162,12 +162,12 @@ TextureImporter:
       name: Fall Attack_1
       rect:
         serializedVersion: 2
-        x: 102
-        y: 2
-        width: 30
-        height: 27
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 90
+        y: 0
+        width: 90
+        height: 37
+      alignment: 9
+      pivot: {x: 0.31, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -184,12 +184,12 @@ TextureImporter:
       name: Fall Attack_2
       rect:
         serializedVersion: 2
-        x: 196
-        y: 6
-        width: 20
-        height: 23
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 180
+        y: 0
+        width: 90
+        height: 37
+      alignment: 9
+      pivot: {x: 0.31, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -206,12 +206,12 @@ TextureImporter:
       name: Fall Attack_3
       rect:
         serializedVersion: 2
-        x: 281
-        y: 2
-        width: 29
-        height: 27
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 270
+        y: 0
+        width: 90
+        height: 37
+      alignment: 9
+      pivot: {x: 0.31, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -228,12 +228,12 @@ TextureImporter:
       name: Fall Attack_4
       rect:
         serializedVersion: 2
-        x: 371
-        y: 6
-        width: 26
-        height: 23
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 360
+        y: 0
+        width: 90
+        height: 37
+      alignment: 9
+      pivot: {x: 0.31, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -250,12 +250,12 @@ TextureImporter:
       name: Fall Attack_5
       rect:
         serializedVersion: 2
-        x: 465
-        y: 6
-        width: 22
-        height: 23
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 450
+        y: 0
+        width: 90
+        height: 37
+      alignment: 9
+      pivot: {x: 0.31, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -272,12 +272,12 @@ TextureImporter:
       name: Fall Attack_6
       rect:
         serializedVersion: 2
-        x: 560
-        y: 6
-        width: 17
-        height: 23
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 540
+        y: 0
+        width: 90
+        height: 37
+      alignment: 9
+      pivot: {x: 0.31, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -294,12 +294,12 @@ TextureImporter:
       name: Fall Attack_7
       rect:
         serializedVersion: 2
-        x: 651
-        y: 6
-        width: 16
-        height: 23
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 630
+        y: 0
+        width: 90
+        height: 37
+      alignment: 9
+      pivot: {x: 0.31, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -316,12 +316,12 @@ TextureImporter:
       name: Fall Attack_8
       rect:
         serializedVersion: 2
-        x: 741
-        y: 6
-        width: 16
-        height: 23
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 720
+        y: 0
+        width: 90
+        height: 37
+      alignment: 9
+      pivot: {x: 0.31, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -338,7 +338,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: b96d1c974cae2274eaf0fad8b3a65460
     internalID: 0
     vertices: []
     indices: 
@@ -346,7 +346,9 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     spriteCustomMetadata:
-      entries: []
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":90.0,"y":37.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.3100000023841858,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":9,"pivotUnitMode":0,"slicingType":1,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
       Fall Attack_0: 7679868657902156255
       Fall Attack_1: 8781938175035314615

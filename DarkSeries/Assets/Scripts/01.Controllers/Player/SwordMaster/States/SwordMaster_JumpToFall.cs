@@ -17,6 +17,7 @@ public class SwordMaster_JumpToFall : SwordMaster_BaseState
         SwordMasterAnimData animData = owner.animationData;
 
         owner.animator.SetBool(animData.startFallParamHash,true);
+        owner.animator.SetBool(animData.isGroundParamHash, false);
     }
 
     public override void Exit()

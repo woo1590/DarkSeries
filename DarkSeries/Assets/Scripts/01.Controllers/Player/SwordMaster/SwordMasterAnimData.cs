@@ -1,9 +1,10 @@
 ﻿using System;
+using UnityEngine;
+
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using UnityEngine;
 
 [Serializable]
 public class SwordMasterAnimData
@@ -17,6 +18,7 @@ public class SwordMasterAnimData
     [SerializeField] private string startFallParamName = "StartFall";
     [SerializeField] private string fallParamName = "Fall";
     [SerializeField] private string landParamName = "Land";
+    [SerializeField] private string crouchParamName = "Crouch";
 
     public int idleParamHash {  get; private set; }
     public int walkParamHash { get; private set ; }
@@ -27,6 +29,7 @@ public class SwordMasterAnimData
     public int startFallParamHash { get; private set ; } 
     public int fallParamHash { get; private set ; } 
     public int landParamHash { get; private set ; } 
+    public int crouchParamHash { get; private set ; }
 
     public void Initialize()
     {
@@ -39,5 +42,6 @@ public class SwordMasterAnimData
         startFallParamHash = Animator.StringToHash(startFallParamName);
         fallParamHash = Animator.StringToHash(fallParamName);
         landParamHash = Animator.StringToHash(landParamName);
+        crouchParamHash = Animator.StringToHash(crouchParamName);
     }
 }
