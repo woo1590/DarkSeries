@@ -54,15 +54,15 @@ DarkSeries/
 - `DarkSeries/Assets/Scripts/01.Controllers/Player/SwordMaster/SwordMaster.cs`
   - 상태를 생성·등록하고 Update/LateUpdate/FixedUpdate를 현재 상태로 전달한다.
   - 이동 입력과 방향 전환, 물리 이동도 함께 조정한다.
-  - Animation Event의 `OnAnimationEnd()`를 현재 상태로 전달한다.
+  - 상태 진입 시 Animator 파라미터와 전체 상태 경로를 동기화하고, 유효한 Animation Event만 현재 상태로 전달한다.
 - `DarkSeries/Assets/Scripts/01.Controllers/Player/SwordMaster/States/`
   - Idle, Walk, Run, Jump, JumpToFall, Fall, Land, SlashAttack, CrouchStart/Hold/End 상태가 분리되어 있다.
-  - 상태 진입과 종료 때 Input Action 콜백을 구독·해제하고 Animator bool/int 파라미터를 변경한다.
+  - 상태는 매 프레임 입력 스냅샷을 평가하며, Animator 변경은 `SwordMasterAnimData`와 `SwordMaster.SyncAnimation()`에 집중된다.
 
 ### Animator 및 애니메이션
 
 - `DarkSeries/Assets/Scripts/01.Controllers/Player/SwordMaster/SwordMasterAnimData.cs`
-  - Inspector에 저장된 Animator 파라미터 이름을 해시로 변환한다.
+  - Inspector의 Animator 파라미터 이름과 코드 상태에 대응하는 전체 Animator 상태 경로를 해시로 변환한다.
 - `DarkSeries/Assets/Scripts/01.Controllers/Player/SwordMaster/Animations/SwordMaster.controller`
   - 코드 상태와 별개인 Animator 상태 및 전이 그래프를 보유한다.
 - `DarkSeries/Assets/Scripts/01.Controllers/Player/SwordMaster/Animations/*.anim`
@@ -77,13 +77,13 @@ DarkSeries/
 #### `DarkSeries/Assets/Scripts/01.Controllers/Player/SwordMaster/SwordMaster.cs`
 
 - 플레이어 입력, 상태 머신, 물리 이동, 방향 전환, 애니메이션 종료 전달이 한 클래스에 집중되어 파급 범위가 크다.
-- 런타임 스크립트에서 `UnityEditor`를 import하고 있어 플레이어 빌드 컴파일에 문제가 될 수 있다.
+- 코드 상태를 기준으로 Animator 상태를 직접 재생하고 LateUpdate에서 불일치를 복구하므로 모든 상태 매핑 변경의 파급 범위가 크다.
 - `animationData`, `playerData`, 필수 컴포넌트가 씬에서 누락되면 초기화 중 null 참조가 발생한다.
 - `SwordMaster_Run` 파일은 존재하지만 `InitializeStates()`에 등록되지 않아 현재 코드 경로에서 사용할 수 없다.
 
 #### `DarkSeries/Assets/Scripts/01.Controllers/Player/SwordMaster/Animations/SwordMaster.controller`
 
-- 코드 상태 머신과 별도의 Animator 전이 그래프를 유지하므로 양쪽의 상태와 파라미터가 어긋날 수 있다.
+- 기존 Animator 전이 그래프는 남아 있지만 코드 상태 진입 시 대응 상태를 직접 재생하므로 전체 상태 경로와 코드 매핑이 정확해야 한다.
 - `Idle`, `Walk`, `Attack`, `ComboIndex`, `IsGround`, `StartFall`, `Fall`, `Crouch`, `Run` 이름이 코드의 해시 및 상태 로직과 정확히 일치해야 한다.
 - 공격 콤보와 공중·앉기 전이가 여러 서브 상태 및 조건에 분산되어 수동 YAML 수정은 특히 위험하다.
 
@@ -96,7 +96,7 @@ DarkSeries/
 #### `DarkSeries/Assets/Scripts/01.Controllers/Player/SwordMaster/Animations/*.anim`
 
 - `jump_to_fall`, `land`, `crouch_start`, `crouch_end` 및 공격 클립의 Animation Event가 코드 상태 전환을 진행시킨다.
-- 이벤트 이름이나 시점이 변경·삭제되면 상태가 종료되지 않고 고정될 수 있다.
+- 코드도 비루프 애니메이션의 완료 시간을 확인하지만, 이벤트 이름이나 시점 변경은 전환 프레임에 영향을 줄 수 있다.
 - 스프라이트 참조가 GUID와 fileID로 직렬화되므로 원본 이미지 재임포트나 `.meta` 변경의 영향이 크다.
 
 ### 중간
@@ -104,22 +104,22 @@ DarkSeries/
 #### `DarkSeries/Assets/Scripts/01.Controllers/State/StateMachine.cs`
 
 - 모든 플레이어 상태 전환의 공통 기반이다.
-- 초기 상태 설정 전에 Update 계열 메서드가 호출되면 `currState` null 참조가 발생한다.
-- 상태의 Update 또는 입력 콜백 도중 즉시 다른 상태로 전환하므로, 전환 뒤 기존 메서드가 계속 실행되면 같은 프레임에 추가 전환이 발생할 수 있다.
+- Update 계열과 Animation Event 전달은 현재 상태가 없을 때 안전하게 무시한다.
+- 같은 상태로의 중복 전환은 거부하며, 상태 코드에서는 전환 뒤 즉시 반환해 같은 프레임의 추가 전환을 방지한다.
 
 #### `DarkSeries/Assets/Scripts/01.Controllers/Player/SwordMaster/States/SwordMaster_BaseState.cs`
 
-- 모든 상태가 공유하는 Input Action 구독·해제 지점이므로 누락이나 비대칭 변경 시 중복 콜백 또는 해제되지 않은 콜백이 발생한다.
-- 각 상태 전환 때 다수의 이벤트를 반복해서 연결하므로 상태 전환 로직과 강하게 결합되어 있다.
+- 공통 애니메이션 진입과 지상·공중 전환 보조 로직이 모여 있어 변경 시 모든 상태에 영향을 준다.
+- 상태별 Input Action 구독은 제거되고 `PlayerInputController`의 프레임 입력 스냅샷을 사용한다.
 
 #### `DarkSeries/Assets/Scripts/01.Controllers/Player/SwordMaster/States/SwordMaster_Idle.cs`
 
-- 공중 상태로 전환한 직후 `return`하지 않아 같은 Update에서 이동 입력이 있으면 Walk로 다시 전환할 가능성이 있다.
-- 공격, 점프, 앉기 입력 진입점이 한 상태에 집중되어 있다.
+- 공중, 앉기, 공격, 점프, 이동 순서로 입력을 평가하고 전환 뒤 즉시 종료한다.
+- 공격, 점프, 앉기 입력 진입점이 한 상태에 집중되어 우선순위 변경의 영향이 크다.
 
 #### `DarkSeries/Assets/Scripts/01.Controllers/Player/SwordMaster/States/SwordMaster_Walk.cs`
 
-- 공중 상태로 전환한 뒤 메서드를 즉시 종료하지 않는다.
+- 공중·앉기·공격·점프 전환 뒤 메서드를 즉시 종료해 다중 전환을 방지한다.
 - Run 입력 전환이 없고, `SwordMaster_Run`도 등록되지 않아 Animator의 Run 구성과 코드가 불일치한다.
 
 #### `DarkSeries/Assets/Scripts/01.Controllers/Player/SwordMaster/States/SwordMaster_SlashAttack.cs`

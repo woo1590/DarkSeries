@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 
 public class SwordMaster_Fall : SwordMaster_BaseState
 {
+    protected override SwordMasterAnimationState animationState => SwordMasterAnimationState.Fall;
+
     public SwordMaster_Fall(StateMachine<SwordMaster> stateMachine)
         : base(stateMachine) { }
 
@@ -13,20 +15,12 @@ public class SwordMaster_Fall : SwordMaster_BaseState
     {
         base.Enter();
 
-        SwordMaster owner = stateMachine.owner;
-        SwordMasterAnimData animData = owner.animationData;
-
-        owner.animator.SetBool(animData.fallParamHash, true);
     }
 
     public override void Exit()
     {
         base.Exit();
 
-        SwordMaster owner = stateMachine.owner;
-        SwordMasterAnimData animData = owner.animationData;
-
-        owner.animator.SetBool(animData.fallParamHash, false);
     }
 
     public override void Update()

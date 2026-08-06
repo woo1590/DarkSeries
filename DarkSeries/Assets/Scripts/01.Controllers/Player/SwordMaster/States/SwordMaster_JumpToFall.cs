@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 
 public class SwordMaster_JumpToFall : SwordMaster_BaseState
 {
+    protected override SwordMasterAnimationState animationState => SwordMasterAnimationState.JumpToFall;
+
     public SwordMaster_JumpToFall(StateMachine<SwordMaster> stateMachine)
         : base(stateMachine) { }
 
@@ -13,25 +15,24 @@ public class SwordMaster_JumpToFall : SwordMaster_BaseState
     {
         base.Enter();
 
-        SwordMaster owner = stateMachine.owner;
-        SwordMasterAnimData animData = owner.animationData;
-
-        owner.animator.SetBool(animData.startFallParamHash,true);
-        owner.animator.SetBool(animData.isGroundParamHash, false);
     }
 
     public override void Exit()
     {
         base.Exit();
 
-        SwordMaster owner = stateMachine.owner;
-        SwordMasterAnimData animData = owner.animationData;
-
-        owner.animator.SetBool(animData.startFallParamHash, false);
     }
 
     public override void Update()
     {
+        if (stateMachine.owner.moveController.isGrounded)
+        {
+            stateMachine.ChangeState<SwordMaster_Land>();
+            return;
+        }
+
+        if (stateMachine.owner.isCurrentAnimationFinished)
+            OnAnimationEnd();
     }
 
     public override void FixedUpdate()

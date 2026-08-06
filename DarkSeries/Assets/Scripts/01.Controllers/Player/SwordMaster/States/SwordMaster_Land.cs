@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 
 public class SwordMaster_Land : SwordMaster_BaseState
 {
+    protected override SwordMasterAnimationState animationState => SwordMasterAnimationState.Land;
+
     public SwordMaster_Land(StateMachine<SwordMaster> stateMachine)
         : base(stateMachine) { }
 
@@ -14,9 +16,6 @@ public class SwordMaster_Land : SwordMaster_BaseState
         base.Enter();
 
         SwordMaster owner = stateMachine.owner;
-        SwordMasterAnimData animData = owner.animationData;
-
-        owner.animator.SetBool(animData.isGroundParamHash, true);
         owner.moveController.moveSpeed = 0f;
     }
 
@@ -27,6 +26,8 @@ public class SwordMaster_Land : SwordMaster_BaseState
 
     public override void Update()
     {
+        if (stateMachine.owner.isCurrentAnimationFinished)
+            OnAnimationEnd();
     }
 
     public override void FixedUpdate()
@@ -39,13 +40,6 @@ public class SwordMaster_Land : SwordMaster_BaseState
 
     public override void OnAnimationEnd()
     {
-        if(stateMachine.owner.inputController.movementInput.sqrMagnitude >= 0.01f)
-        {
-            stateMachine.ChangeState<SwordMaster_Walk>();
-        }
-        else
-        {
-            stateMachine.ChangeState<SwordMaster_Idle>();
-        }
+        ChangeToGroundedMovementState();
     }
 }
