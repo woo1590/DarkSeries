@@ -7,6 +7,8 @@ using UnityEngine;
 
 public class SwordMaster_Jump : SwordMaster_BaseState
 {
+    protected override SwordMasterAnimationState animationState => SwordMasterAnimationState.Jump;
+
     public SwordMaster_Jump(StateMachine<SwordMaster> stateMachine)
         : base(stateMachine) { }
 
@@ -17,11 +19,6 @@ public class SwordMaster_Jump : SwordMaster_BaseState
         SwordMaster owner = stateMachine.owner;
         PlayerData playerData = owner.playerData;
         PlayerMoveController moveController = owner.moveController;
-        SwordMasterAnimData animData = owner.animationData;
-
-        owner.animator.SetBool(animData.isGroundParamHash, false);
-
-        /* Jump Power Controll*/
         moveController.jumpPower = playerData.baseJumpPower * playerData.jumpPowerModifier;
         moveController.Jump();
     }
@@ -35,18 +32,12 @@ public class SwordMaster_Jump : SwordMaster_BaseState
     {
         Rigidbody2D rigid = stateMachine.owner.GetComponent<Rigidbody2D>();
 
-        if(rigid.linearVelocityY <=0f)
-        {
+        if (rigid.linearVelocityY <= 0f)
             stateMachine.ChangeState<SwordMaster_JumpToFall>();
-        }
-
     }
 
     public override void FixedUpdate()
     {
     }
 
-    public override void LateUpdate()
-    {
-    }
 }

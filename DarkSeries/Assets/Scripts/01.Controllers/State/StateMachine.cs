@@ -6,28 +6,30 @@ public class StateMachine<T>
 {
     public T owner { get; private set; }
     public IState<T> currState { get; private set; }
-    Dictionary<Type,IState<T>> states = new();
+    private readonly Dictionary<Type, IState<T>> states = new();
 
     public StateMachine(T owner)
     {
         this.owner = owner;
     }
 
-    public void ChangeState<TState>()
+    public bool ChangeState<TState>()
     {
         Type type = typeof(TState);
 
-        if(states.TryGetValue(type,out IState<T> nextState))
+        if (!states.TryGetValue(type, out IState<T> nextState))
         {
-            currState?.Exit();
-            currState = nextState;
-            currState.Enter();
+            Debug.LogError($"{type.Name} not exist");
+            return false;
         }
-        else
-        {
-            Debug.LogError($"{typeof(TState).Name} not exist");
-            return;
-        }
+
+        if (ReferenceEquals(currState, nextState))
+            return false;
+
+        currState?.Exit();
+        currState = nextState;
+        currState.Enter();
+        return true;
     }
 
     public void AddState(IState<T> state)
@@ -37,15 +39,20 @@ public class StateMachine<T>
 
     public void Update()
     {
-        currState.Update();
+        currState?.Update();
     }
 
     public void LateUpdate()
     {
-        currState.LateUpdate();
+        currState?.LateUpdate();
     }
     public void FixedUpdate()
     {
-        currState.FixedUpdate();
+        currState?.FixedUpdate();
+    }
+
+    public void OnAnimationEnd()
+    {
+        currState?.OnAnimationEnd();
     }
 }

@@ -18,6 +18,7 @@ public class PlayerMoveController : MonoBehaviour
     {
         rigidbody = GetComponent<Rigidbody2D>();
         platformLayer = LayerMask.GetMask("Platform");
+        UpdateGroundedState();
     }
 
     public void Move(float direction)
@@ -31,6 +32,11 @@ public class PlayerMoveController : MonoBehaviour
     }
 
     private void FixedUpdate()
+    {
+        UpdateGroundedState();
+    }
+
+    private void UpdateGroundedState()
     {
         Vector2 groundCheckPosition = (Vector2)transform.position + groundCheckOffset;
 

@@ -5,6 +5,8 @@ using UnityEngine.InputSystem;
 
 public class SwordMaster_CrouchEnd : SwordMaster_BaseState
 {
+    protected override SwordMasterAnimationState animationState => SwordMasterAnimationState.CrouchEnd;
+
     public SwordMaster_CrouchEnd(StateMachine<SwordMaster> stateMachine)
         : base(stateMachine) { }
 
@@ -13,9 +15,7 @@ public class SwordMaster_CrouchEnd : SwordMaster_BaseState
         base.Enter();
 
         SwordMaster owner = stateMachine.owner;
-        SwordMasterAnimData animData = owner.animationData;
-
-        owner.animator.SetBool(animData.crouchParamHash, false);
+        owner.moveController.moveSpeed = 0f;
     }
 
     public override void Exit()
@@ -28,16 +28,17 @@ public class SwordMaster_CrouchEnd : SwordMaster_BaseState
     {
     }
 
-    public override void LateUpdate()
-    {
-    }
-
     public override void Update()
     {
+        if (ChangeToAirborneStateIfNeeded())
+            return;
+
+        if (stateMachine.owner.isCurrentAnimationFinished)
+            OnAnimationEnd();
     }
 
     public override void OnAnimationEnd()
     {
-        stateMachine.ChangeState<SwordMaster_Idle>();
+        ChangeToGroundedMovementState();
     }
 }

@@ -5,13 +5,16 @@ using UnityEngine;
 
 public class SwordMaster_CrouchHold : SwordMaster_BaseState
 {
+    protected override SwordMasterAnimationState animationState => SwordMasterAnimationState.CrouchHold;
+    protected override bool restartAnimationOnEnter => false;
+
     public SwordMaster_CrouchHold(StateMachine<SwordMaster> stateMachine)
         : base(stateMachine) { }
 
     public override void Enter()
     {
         base.Enter();
-
+        stateMachine.owner.moveController.moveSpeed = 0f;
     }
 
     public override void Exit()
@@ -24,16 +27,12 @@ public class SwordMaster_CrouchHold : SwordMaster_BaseState
     {
     }
 
-    public override void LateUpdate()
-    {
-    }
-
     public override void Update()
     {
-    }
+        if (ChangeToAirborneStateIfNeeded())
+            return;
 
-    protected override void OnCrouchCanceled(InputAction.CallbackContext context)
-    {
-        stateMachine.ChangeState<SwordMaster_CrouchEnd>();
+        if (!stateMachine.owner.inputController.crouchIsPressed)
+            stateMachine.ChangeState<SwordMaster_CrouchEnd>();
     }
 }

@@ -33,23 +33,24 @@ Player
 ### 초기화
 
 1. `Player.Awake()`가 `SpriteRenderer`, `Animator`, `PlayerMoveController`, `PlayerInputController`를 가져온다.
-2. `SwordMaster.Awake()`가 공격 컨트롤러를 가져오고 Animator 파라미터 해시를 초기화한다.
+2. `SwordMaster.Awake()`가 공격 컨트롤러를 가져오고 Animator 파라미터 및 상태 경로 해시를 초기화한다.
 3. `SwordMaster.Start()`가 상태 머신과 상태 객체를 만들고 `Idle`을 최초 상태로 지정한다.
-4. 각 상태의 `Enter()`는 베이스 상태를 통해 필요한 Input Action 콜백을 연결한다.
+4. 각 상태의 `Enter()`는 베이스 상태를 통해 대응 Animator 상태와 파라미터를 즉시 동기화한다.
 
 ### 매 프레임
 
 - `SwordMaster.Update()`
-  - 현재 Movement 값을 읽어 `movementInput`에 저장한다.
+  - Movement와 프레임 단위 Attack, Jump, Crouch 입력 스냅샷을 갱신한다.
   - 현재 상태의 `Update()`를 호출한다.
 - `SwordMaster.LateUpdate()`
   - 현재 상태의 `LateUpdate()`를 호출한다.
+  - 기본 상태는 A/D 입력을 `UpdateFacing()`에 전달하고, SlashAttack은 `LateUpdate()`를 비워 방향 입력을 무시한다.
+  - Animator가 코드 상태와 다른 상태로 전환되었으면 현재 코드 상태의 애니메이션으로 다시 맞춘다.
 - `SwordMaster.FixedUpdate()`
   - 현재 상태의 `FixedUpdate()`를 호출한다.
   - 입력의 X 방향으로 실제 Rigidbody2D 이동을 수행한다.
-  - 이동 방향에 따라 스프라이트를 좌우 반전한다.
 - `PlayerMoveController.FixedUpdate()`
-  - 캐릭터 아래쪽의 `OverlapBox`로 Platform 레이어 접촉 여부를 갱신한다.
+  - 캐릭터 아래쪽의 `OverlapBox`로 Platform 레이어 접촉 여부를 갱신한다. 같은 검사는 `Awake()`에서도 한 번 실행해 첫 프레임 상태를 안정화한다.
 
 ## 4. 공통 시스템
 
@@ -65,7 +66,7 @@ Player
 
 ### `StateMachine<T>`
 
-상태 인스턴스를 타입별 Dictionary에 보관한다. `ChangeState<TState>()`가 호출되면 현재 상태의 `Exit()`, 다음 상태 지정, 다음 상태의 `Enter()` 순서로 전환한다.
+상태 인스턴스를 타입별 Dictionary에 보관한다. `ChangeState<TState>()`가 호출되면 현재 상태의 `Exit()`, 다음 상태 지정, 다음 상태의 `Enter()` 순서로 전환한다. 등록되지 않은 상태와 현재 상태로의 중복 전환은 수행하지 않으며, Update 계열과 Animation Event 전달은 현재 상태가 없을 때도 안전하게 무시한다.
 
 상태는 실행 중 새로 생성하지 않고 시작 시 한 번 생성해 재사용한다. 따라서 각 상태 객체 안에 필드를 추가할 경우 다음 진입에도 값이 유지된다는 점을 고려해야 한다.
 
@@ -76,17 +77,19 @@ Input System 자동 생성 래퍼인 `PlayerActionMap`을 소유한다.
 - 활성화될 때 전체 액션을 Enable
 - 비활성화될 때 전체 액션을 Disable
 - Movement는 폴링하여 `movementInput`에 보관
-- Attack, Jump, Crouch 등 순간 행동은 상태가 콜백을 직접 구독
+- Attack과 Jump의 이번 프레임 입력, Crouch의 시작·해제·유지 상태를 매 프레임 스냅샷으로 보관
+- 상태 객체는 Input Action 이벤트를 직접 구독하지 않고 해당 스냅샷만 평가
+- 파괴될 때 자동 생성 Input Actions 래퍼를 Dispose
 
 현재 입력 구성은 다음과 같다.
 
 | 액션 | 바인딩 | 코드 사용 방식 |
 |---|---|---|
-| Attack | 마우스 왼쪽 버튼 | 상태 콜백 |
-| Movement | A/D 2D Vector | 매 프레임 폴링 및 상태 콜백 |
-| Jump | Space | 상태 콜백 |
-| Crouch | S | 상태 콜백 |
-| Run | Left Shift | Input Action에는 존재하지만 상태 베이스에서 아직 연결하지 않음 |
+| Attack | 마우스 왼쪽 버튼 | 프레임 입력 스냅샷 |
+| Movement | A/D 2D Vector | 매 프레임 폴링 |
+| Jump | Space | 프레임 입력 스냅샷 |
+| Crouch | S | 시작·해제·유지 입력 스냅샷 |
+| Run | Left Shift | Input Action에는 존재하지만 이번 리팩터링 범위에서는 제외 |
 
 ### `PlayerMoveController`
 
@@ -120,14 +123,16 @@ Player의 구체 캐릭터 구현이며 다음 역할을 묶는다.
 - 상태 머신 생성과 상태 등록
 - Unity 업데이트를 상태 머신에 전달
 - 물리 이동 및 바라보는 방향 갱신
-- Animation Event의 `OnAnimationEnd()`를 현재 상태에 전달
+- 코드 상태 진입 시 Animator 파라미터와 재생 상태를 동기화
+- LateUpdate에서 상태–애니메이션 불일치를 감지해 현재 코드 상태를 기준으로 복구
+- 현재 애니메이션과 완료 시점이 일치하는 Animation Event만 현재 상태에 전달
 - `OnGUI()`로 현재 상태 이름을 화면에 표시하는 디버그 UI 제공
 
 현재 등록된 상태는 Idle, Walk, SlashAttack, Jump, JumpToFall, Fall, Land, CrouchStart, CrouchHold, CrouchEnd다.
 
 ### `SwordMasterAnimData`
 
-Inspector에 저장된 Animator 파라미터 문자열을 정수 해시로 변환한다.
+Inspector에 저장된 Animator 파라미터 문자열과 Controller의 전체 상태 경로를 정수 해시로 변환한다. 코드 상태가 바뀌면 관련 bool을 한곳에서 초기화하고 대응 Animator 상태를 직접 재생한다.
 
 | 파라미터 | 사용 목적 |
 |---|---|
@@ -142,7 +147,7 @@ Inspector에 저장된 Animator 파라미터 문자열을 정수 해시로 변�
 | Land | 착지 애니메이션용 |
 | Crouch | 앉기 시작/종료 제어 |
 
-`Animator.StringToHash` 결과를 미리 보관하므로 상태 코드에서 매번 문자열을 해시하지 않는다.
+`Idle`, `Walk`, 공중 상태, 공격 콤보, 앉기 시작·종료의 전체 Animator 상태 경로 해시를 보관한다. CrouchHold는 별도 클립이 없으므로 완료된 CrouchStart 상태를 유지한다. Run 관련 해시와 동작은 기존 상태에 남아 있으며 이번 리팩터링 대상에서 제외된다.
 
 ### `SwordMasterAttackController`
 
@@ -161,17 +166,17 @@ Inspector에 저장된 Animator 파라미터 문자열을 정수 해시로 변�
 
 #### `SwordMaster_Idle`
 
-- Idle Animator bool을 켠다.
+- Idle 애니메이션과 파라미터를 동기화하고 이동 속도를 0으로 둔다.
 - 이동 입력이 생기면 Walk로 전환한다.
 - 지면에서 떨어지면 JumpToFall로 전환한다.
-- Attack, Jump, Crouch 입력을 각각 SlashAttack, Jump, CrouchStart로 연결한다.
+- Crouch, Attack, Jump 순으로 프레임 입력을 평가하고 각 상태로 전환한다.
 
 #### `SwordMaster_Walk`
 
-- Walk Animator bool을 켠다.
+- Walk 애니메이션과 파라미터를 동기화한다.
 - 걷기 속도를 데이터의 기본 속도와 배율로 계산한다.
 - 이동 입력이 취소되면 Idle로 전환한다.
-- 공격 또는 점프 입력 시 해당 상태로 전환한다.
+- Crouch, Attack 또는 Jump 입력 시 해당 상태로 전환한다.
 - 지면에서 떨어지면 JumpToFall로 전환한다.
 
 #### `SwordMaster_Run`
@@ -184,51 +189,53 @@ Inspector에 저장된 Animator 파라미터 문자열을 정수 해시로 변�
 
 #### `SwordMaster_Jump`
 
-- IsGround를 false로 설정한다.
+- Jump 애니메이션과 공중 파라미터를 동기화한다.
 - 데이터에서 점프 힘을 계산하고 Rigidbody2D에 적용한다.
 - Y 속도가 0 이하가 되면 JumpToFall로 전환한다.
 
 #### `SwordMaster_JumpToFall`
 
-- StartFall을 켜고 IsGround를 false로 둔다.
+- JumpToFall 애니메이션과 공중 파라미터를 동기화한다.
 - 전환 애니메이션이 끝나면 Fall로 이동한다.
+- 먼저 지면에 닿으면 Crouch 입력 유지 여부에 따라 CrouchStart 또는 Land로 이동한다.
 
 #### `SwordMaster_Fall`
 
-- Fall Animator bool을 켠다.
-- 지면이 감지되면 Land로 전환한다.
+- Fall 애니메이션과 파라미터를 동기화한다.
+- 지면이 감지되면 Crouch 입력 유지 여부에 따라 CrouchStart 또는 Land로 전환한다.
+- 착지 모션과 CrouchStart 모션이 같은 점을 고려해, Crouch 입력을 유지한 착지에서는 Land를 건너뛰어 같은 모션이 두 번 재생되지 않게 한다.
 
 #### `SwordMaster_Land`
 
-- IsGround를 true로 만들고 이동 속도를 0으로 둔다.
+- Land 애니메이션과 지상 파라미터를 동기화하고 이동 속도를 0으로 둔다.
 - 착지 애니메이션 종료 시 이동 입력이 있으면 Walk, 없으면 Idle로 이동한다.
 
 ### 공격 상태
 
 #### `SwordMaster_SlashAttack`
 
-- 현재 콤보 인덱스를 Animator의 `ComboIndex`에 전달한다.
-- Attack bool을 켜고 이동 속도를 0으로 설정한다.
+- 현재 콤보 인덱스에 대응하는 Slash 애니메이션과 Attack 파라미터를 동기화하고 이동 속도를 0으로 설정한다.
+- 공격 상태의 `LateUpdate()`에서는 A/D 입력을 처리하지 않아 공격 방향을 고정한다.
 - 공격 중 추가 공격 입력을 버퍼에 저장한다.
-- 애니메이션 종료 시 버퍼가 없으면 콤보를 초기화하고 Idle로 돌아간다.
-- 버퍼가 있으면 콤보 인덱스를 증가시키고 다음 공격 애니메이션을 이어간다.
+- 애니메이션 종료 시 버퍼가 없으면 콤보를 초기화하고 이동 입력에 따라 Walk 또는 Idle로 돌아간다.
+- 버퍼가 있으면 콤보 인덱스를 증가시키고 코드에서 다음 공격 애니메이션을 직접 재생한다.
 
 ### 앉기 상태
 
 #### `SwordMaster_CrouchStart`
 
-- Crouch bool을 켜고 이동 속도를 0으로 만든다.
-- 시작 애니메이션 종료 시 CrouchHold로 이동한다.
+- CrouchStart 애니메이션과 파라미터를 동기화하고 이동 속도를 0으로 만든다.
+- 시작 중 입력을 놓으면 즉시 CrouchEnd로 전환하고, 유지한 채 애니메이션이 끝나면 CrouchHold로 이동한다.
 
 #### `SwordMaster_CrouchHold`
 
-- Crouch 입력이 취소될 때까지 유지한다.
+- 완료된 CrouchStart 모션과 이동 속도 0을 Crouch 입력이 취소될 때까지 유지한다.
 - 입력 취소 시 CrouchEnd로 이동한다.
 
 #### `SwordMaster_CrouchEnd`
 
-- Crouch bool을 끈다.
-- 종료 애니메이션이 끝나면 Idle로 이동한다.
+- CrouchEnd 애니메이션을 직접 재생하고 이동 속도를 0으로 유지한다.
+- 종료 애니메이션이 끝난 뒤 이동 입력이 있으면 Walk, 없으면 Idle로 이동한다.
 
 ## 7. 상태 전환 요약
 
@@ -244,38 +251,38 @@ stateDiagram-v2
     Walk --> Idle: 이동 취소
     Walk --> Jump: 점프 입력
     Walk --> SlashAttack: 공격 입력
+    Walk --> CrouchStart: 앉기 입력
     Walk --> JumpToFall: 지면 이탈
 
     Jump --> JumpToFall: Y 속도 <= 0
     JumpToFall --> Fall: 애니메이션 종료
-    Fall --> Land: 지면 접촉
+    JumpToFall --> Land: 지면 접촉, 앉기 미입력
+    JumpToFall --> CrouchStart: 지면 접촉, 앉기 유지
+    Fall --> Land: 지면 접촉, 앉기 미입력
+    Fall --> CrouchStart: 지면 접촉, 앉기 유지
     Land --> Walk: 이동 입력 있음
     Land --> Idle: 이동 입력 없음
 
     SlashAttack --> SlashAttack: 버퍼 입력 있음
-    SlashAttack --> Idle: 버퍼 입력 없음
+    SlashAttack --> Walk: 버퍼 입력 없음, 이동 입력 있음
+    SlashAttack --> Idle: 버퍼 입력 없음, 이동 입력 없음
 
     CrouchStart --> CrouchHold: 애니메이션 종료
+    CrouchStart --> CrouchEnd: 앉기 입력 조기 취소
     CrouchHold --> CrouchEnd: 앉기 입력 취소
-    CrouchEnd --> Idle: 애니메이션 종료
+    CrouchEnd --> Walk: 애니메이션 종료, 이동 입력 있음
+    CrouchEnd --> Idle: 애니메이션 종료, 이동 입력 없음
 ```
 
 Run 상태는 파일과 Animator 파라미터는 있지만 현재 전환 그래프에는 연결되지 않는다.
 
 ## 8. 현재 확인되는 주의 사항
 
-아래는 코드를 수정하지 않고 분석 과정에서 확인한 내용이다.
-
-1. `SwordMaster.cs`가 런타임 코드에서 `UnityEditor`를 import한다. Editor에서는 지나갈 수 있지만 플레이어 빌드 시 문제가 될 수 있다.
-2. `SwordMaster_Run`은 생성 및 등록되지 않으며 Run 입력도 상태 콜백에 연결되지 않는다.
-3. Idle의 `Update()`에서 공중 전환 후 즉시 반환하지 않는다. 같은 프레임에 이동 입력이 있으면 Walk 전환이 다시 실행될 가능성이 있다.
-4. `StateMachine`의 Update 계열은 최초 상태가 설정되기 전에 호출되면 null 참조가 발생할 수 있다. 현재 생명주기 순서에서는 Start에서 Idle을 지정한 뒤 일반 Update가 시작되므로 보통은 문제되지 않는다.
-5. `PlayerActionMap`은 생성 후 Enable/Disable하지만 명시적으로 Dispose하지 않는다.
-6. Jump 상태가 매 프레임 `GetComponent<Rigidbody2D>()`를 호출한다. 기능상 문제는 없지만 이미 `PlayerMoveController`가 같은 Rigidbody2D를 캐시하고 있다.
-7. `CrouchStart` 중 S 키를 놓으면 해당 상태에는 취소 처리가 없어 시작 애니메이션이 끝난 뒤 Hold에 진입해야 CrouchEnd로 갈 수 있다.
-8. 여러 파일에 사용하지 않는 namespace와 빈 Update override가 남아 있다. 현재 동작에는 영향을 주지 않는다.
-9. `OnJumpStatred`는 Started의 오타지만 베이스와 오버라이드가 동일하게 사용하므로 현재 콜백 연결은 동작한다.
-10. `Land`용 Animator 해시는 준비되어 있으나 Land 상태 코드에서는 `landParamHash`를 직접 설정하지 않는다. Animator 전이 조건이 IsGround 중심인지 확인할 필요가 있다.
+1. `SwordMaster_Run`은 생성 및 등록되지 않으며 Run 입력도 상태 흐름에 연결되지 않는다. 이번 상태–애니메이션 동기화 리팩터링에서도 명시적으로 제외했다.
+2. Jump 상태가 매 프레임 `GetComponent<Rigidbody2D>()`를 호출한다. 기능상 문제는 없지만 이미 `PlayerMoveController`가 같은 Rigidbody2D를 캐시하고 있다.
+3. 여러 상태 파일에 사용하지 않는 namespace와 빈 Update 계열 override가 남아 있다. 현재 동작에는 영향을 주지 않는다.
+4. `Land` 파라미터 이름과 해시는 보존되지만 현재 Animator Controller에는 Land 파라미터가 없고, Land 상태는 전체 상태 경로를 직접 재생한다.
+5. Animation Clip의 기존 `OnAnimationEnd` 이벤트는 유지된다. 코드에서도 비루프 애니메이션의 정규화 시간을 확인하므로 이벤트가 누락되더라도 상태 종료를 진행할 수 있다.
 
 ## 9. 기능 확장 시 확인 순서
 
@@ -284,8 +291,9 @@ Run 상태는 파일과 Animator 파라미터는 있지만 현재 전환 그래�
 1. 상태 클래스 작성
 2. `SwordMaster.InitializeStates()`에서 인스턴스 생성 및 등록
 3. 진입 가능한 이전 상태에서 `ChangeState<T>()` 호출
-4. 필요한 입력 콜백을 `SwordMaster_BaseState`에 정의하고 구독/해제
-5. Animator 파라미터를 `SwordMasterAnimData`에 정의하고 초기화
-6. Animator Controller의 파라미터와 전환 구성
-7. 종료 애니메이션이 필요한 경우 Animation Event에서 `SwordMaster.OnAnimationEnd()` 호출
+4. `PlayerInputController`의 프레임 입력 스냅샷 중 필요한 값을 상태에서 평가
+5. `SwordMasterAnimationState`와 `SwordMasterAnimData.GetStateHash()`에 대응 Animator 전체 경로를 추가
+6. 상태의 `animationState`를 오버라이드하고 진입 시 중앙 동기화가 적용되는지 확인
+7. 비루프 애니메이션은 정규화 시간 또는 Animation Event로 상태 종료를 처리
+8. 모든 `ChangeState<T>()` 호출 뒤 이전 상태 로직이 계속되지 않도록 즉시 반환 여부 확인
 

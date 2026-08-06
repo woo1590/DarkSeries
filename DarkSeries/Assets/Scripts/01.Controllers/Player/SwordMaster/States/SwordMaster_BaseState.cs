@@ -4,69 +4,56 @@ using UnityEngine.InputSystem;
 
 public class SwordMaster_BaseState : IState<SwordMaster>
 {
+    protected virtual SwordMasterAnimationState animationState => SwordMasterAnimationState.None;
+    protected virtual bool restartAnimationOnEnter => true;
+
     public SwordMaster_BaseState(StateMachine<SwordMaster> stateMachine)
         : base(stateMachine) { }
 
     public override void Enter()
     {
-        AddInputActionCallBacks();
+        if (animationState != SwordMasterAnimationState.None)
+            stateMachine.owner.SyncAnimation(animationState, restartAnimationOnEnter);
     }
 
-    public override void Exit()
-    {
-        RemoveInputActionCallBacks();
-    }
+    public override void Exit() { }
 
     public override void FixedUpdate() { }
-    public override void LateUpdate() { }
+    public override void LateUpdate()
+    {
+        SwordMaster owner = stateMachine.owner;
+        owner.UpdateFacing(owner.inputController.movementInput.x);
+    }
     public override void Update() { }
 
-    /* Input Action Callbacks */
-    protected virtual void AddInputActionCallBacks()
+    protected bool ChangeToAirborneStateIfNeeded()
     {
-        PlayerInputController input = stateMachine.owner.inputController;
+        if (stateMachine.owner.moveController.isGrounded)
+            return false;
 
-        input.playerActions.Movement.started += OnMovementStarted;
-        input.playerActions.Movement.performed += OnMovementPerformed;
-        input.playerActions.Movement.canceled += OnMovementCanceled;
-
-        input.playerActions.Attack.started += OnAttackStarted;
-        input.playerActions.Attack.canceled += OnAttackCanceled;
-
-        input.playerActions.Jump.started += OnJumpStatred;
-
-        input.playerActions.Crouch.started += OnCrouchStarted;
-        input.playerActions.Crouch.canceled += OnCrouchCanceled;
-
+        stateMachine.ChangeState<SwordMaster_JumpToFall>();
+        return true;
     }
 
-    protected virtual void RemoveInputActionCallBacks()
+    protected void ChangeToGroundedMovementState()
     {
-        PlayerInputController input = stateMachine.owner.inputController;
+        if (!stateMachine.owner.moveController.isGrounded)
+        {
+            stateMachine.ChangeState<SwordMaster_JumpToFall>();
+            return;
+        }
 
-        input.playerActions.Movement.started -= OnMovementStarted;
-        input.playerActions.Movement.performed -= OnMovementPerformed;
-        input.playerActions.Movement.canceled -= OnMovementCanceled;
-
-        input.playerActions.Attack.started -= OnAttackStarted;
-        input.playerActions.Attack.canceled -= OnAttackCanceled;
-
-        input.playerActions.Jump.started -= OnJumpStatred;
-
-        input.playerActions.Crouch.started -= OnCrouchStarted;
-        input.playerActions.Crouch.canceled -= OnCrouchCanceled;
-
+        if (stateMachine.owner.inputController.movementInput.sqrMagnitude >= 0.01f)
+            stateMachine.ChangeState<SwordMaster_Walk>();
+        else
+            stateMachine.ChangeState<SwordMaster_Idle>();
     }
 
-    protected virtual void OnMovementStarted(InputAction.CallbackContext context) { }
-    protected virtual void OnMovementPerformed(InputAction.CallbackContext context) { }
-    protected virtual void OnMovementCanceled(InputAction.CallbackContext context) { }
-
-    protected virtual void OnAttackStarted(InputAction.CallbackContext context) { }
-    protected virtual void OnAttackCanceled(InputAction.CallbackContext context) { }
-
-    protected virtual void OnJumpStatred(InputAction.CallbackContext context) { }
-
-    protected virtual void OnCrouchStarted(InputAction.CallbackContext context) { }
-    protected virtual void OnCrouchCanceled(InputAction.CallbackContext context) { }
+    protected void ChangeToLandingState()
+    {
+        if (stateMachine.owner.inputController.crouchIsPressed)
+            stateMachine.ChangeState<SwordMaster_CrouchStart>();
+        else
+            stateMachine.ChangeState<SwordMaster_Land>();
+    }
 }

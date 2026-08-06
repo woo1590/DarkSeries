@@ -1,5 +1,4 @@
 using Unity.VisualScripting;
-using UnityEditor;
 using UnityEngine;
 
 public class SwordMaster : Player
@@ -12,7 +11,18 @@ public class SwordMaster : Player
 
     public SwordMasterAttackController attackController { get; private set; }
     private StateMachine<SwordMaster> stateMachine;
-    
+    private SwordMasterAnimationState currentAnimationState;
+
+    public string currentStateName => stateMachine?.currState?.GetType().Name;
+    public bool isAnimationSynchronized => animationData.IsCurrentState(
+        animator,
+        currentAnimationState,
+        attackController.slashComboIndex);
+    public bool isCurrentAnimationFinished => animationData.IsCurrentStateFinished(
+        animator,
+        currentAnimationState,
+        attackController.slashComboIndex);
+
     protected override void Awake()
     {
         base.Awake();
@@ -35,6 +45,7 @@ public class SwordMaster : Player
     protected override void LateUpdate()
     {
         stateMachine.LateUpdate();
+        EnsureAnimationSynchronization();
     }
 
     protected override void FixedUpdate()
@@ -43,7 +54,6 @@ public class SwordMaster : Player
 
         float direction = inputController.movementInput.x;
 
-        UpdateFacing(direction);
         moveController.Move(direction);
     }
 
@@ -67,7 +77,39 @@ public class SwordMaster : Player
 
     public void OnAnimationEnd()
     {
-        stateMachine.currState.OnAnimationEnd();
+        if (!isAnimationSynchronized || !isCurrentAnimationFinished)
+            return;
+
+        stateMachine.OnAnimationEnd();
+    }
+
+    public void SyncAnimation(SwordMasterAnimationState animationState, bool restartAnimation = true)
+    {
+        currentAnimationState = animationState;
+
+        int comboIndex = attackController.slashComboIndex;
+        animationData.ApplyParameters(animator, animationState, comboIndex);
+
+        int stateHash = animationData.GetStateHash(animationState, comboIndex);
+        if (stateHash == 0)
+            return;
+
+        if (!animator.HasState(0, stateHash))
+        {
+            Debug.LogError($"Animator state for {animationState} does not exist.", this);
+            return;
+        }
+
+        if (restartAnimation || !animationData.IsCurrentState(animator, animationState, comboIndex))
+            animator.Play(stateHash, 0, 0f);
+    }
+
+    private void EnsureAnimationSynchronization()
+    {
+        if (currentAnimationState == SwordMasterAnimationState.None || isAnimationSynchronized)
+            return;
+
+        SyncAnimation(currentAnimationState);
     }
 
     /* Debug */

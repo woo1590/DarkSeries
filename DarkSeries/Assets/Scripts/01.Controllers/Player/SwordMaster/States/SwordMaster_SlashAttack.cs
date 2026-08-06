@@ -10,20 +10,14 @@ using UnityEngine.XR;
 
 public class SwordMaster_SlashAttack : SwordMaster_BaseState
 {
+    protected override SwordMasterAnimationState animationState => SwordMasterAnimationState.SlashAttack;
+
     public SwordMaster_SlashAttack(StateMachine<SwordMaster> stateMachine)
         : base(stateMachine) { }
-
-    private static readonly int comboIndexHash = Animator.StringToHash("ComboIndex");
 
     public override void Enter()
     {
         base.Enter();
-        
-        SwordMasterAnimData animData = stateMachine.owner.animationData;
-        int comboIndex = stateMachine.owner.attackController.slashComboIndex;
-
-        stateMachine.owner.animator.SetInteger(comboIndexHash, comboIndex);
-        stateMachine.owner.animator.SetBool(animData.attackParamHash, true);
         stateMachine.owner.moveController.moveSpeed = 0f;
     }
 
@@ -31,8 +25,6 @@ public class SwordMaster_SlashAttack : SwordMaster_BaseState
     {
         base.Exit();
 
-        SwordMasterAnimData animData = stateMachine.owner.animationData;
-        stateMachine.owner.animator.SetBool(animData.attackParamHash, false);
     }
 
     public override void FixedUpdate()
@@ -45,11 +37,11 @@ public class SwordMaster_SlashAttack : SwordMaster_BaseState
 
     public override void Update()
     {
-    }
+        if (stateMachine.owner.inputController.attackPressedThisFrame)
+            stateMachine.owner.attackController.BufferSlash();
 
-    protected override void OnAttackStarted(InputAction.CallbackContext context)
-    {
-        stateMachine.owner.attackController.BufferSlash();
+        if (stateMachine.owner.isCurrentAnimationFinished)
+            OnAnimationEnd();
     }
 
     public override void OnAnimationEnd()
@@ -59,13 +51,12 @@ public class SwordMaster_SlashAttack : SwordMaster_BaseState
         if (!attackController.ConsumeBuffer())
         {
             attackController.ResetCombo();
-            stateMachine.ChangeState<SwordMaster_Idle>();
+            ChangeToGroundedMovementState();
         }
         else
         {
             attackController.IncreaseCombo();
+            stateMachine.owner.SyncAnimation(SwordMasterAnimationState.SlashAttack);
         }
-
-        stateMachine.owner.animator.SetInteger(comboIndexHash, attackController.slashComboIndex);
     }
 }
