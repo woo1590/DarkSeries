@@ -27,10 +27,6 @@ public class SwordMaster_CrouchHold : SwordMaster_BaseState
     {
     }
 
-    public override void LateUpdate()
-    {
-    }
-
     public override void Update()
     {
         if (ChangeToAirborneStateIfNeeded())

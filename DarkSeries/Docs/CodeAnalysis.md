@@ -44,11 +44,11 @@ Player
   - 현재 상태의 `Update()`를 호출한다.
 - `SwordMaster.LateUpdate()`
   - 현재 상태의 `LateUpdate()`를 호출한다.
+  - 기본 상태는 A/D 입력을 `UpdateFacing()`에 전달하고, SlashAttack은 `LateUpdate()`를 비워 방향 입력을 무시한다.
   - Animator가 코드 상태와 다른 상태로 전환되었으면 현재 코드 상태의 애니메이션으로 다시 맞춘다.
 - `SwordMaster.FixedUpdate()`
   - 현재 상태의 `FixedUpdate()`를 호출한다.
   - 입력의 X 방향으로 실제 Rigidbody2D 이동을 수행한다.
-  - 이동 방향에 따라 스프라이트를 좌우 반전한다.
 - `PlayerMoveController.FixedUpdate()`
   - 캐릭터 아래쪽의 `OverlapBox`로 Platform 레이어 접촉 여부를 갱신한다. 같은 검사는 `Awake()`에서도 한 번 실행해 첫 프레임 상태를 안정화한다.
 
@@ -196,12 +196,14 @@ Inspector에 저장된 Animator 파라미터 문자열과 Controller의 전체 �
 #### `SwordMaster_JumpToFall`
 
 - JumpToFall 애니메이션과 공중 파라미터를 동기화한다.
-- 전환 애니메이션이 끝나면 Fall로 이동하며, 먼저 지면에 닿으면 Land로 이동한다.
+- 전환 애니메이션이 끝나면 Fall로 이동한다.
+- 먼저 지면에 닿으면 Crouch 입력 유지 여부에 따라 CrouchStart 또는 Land로 이동한다.
 
 #### `SwordMaster_Fall`
 
 - Fall 애니메이션과 파라미터를 동기화한다.
-- 지면이 감지되면 Land로 전환한다.
+- 지면이 감지되면 Crouch 입력 유지 여부에 따라 CrouchStart 또는 Land로 전환한다.
+- 착지 모션과 CrouchStart 모션이 같은 점을 고려해, Crouch 입력을 유지한 착지에서는 Land를 건너뛰어 같은 모션이 두 번 재생되지 않게 한다.
 
 #### `SwordMaster_Land`
 
@@ -213,6 +215,7 @@ Inspector에 저장된 Animator 파라미터 문자열과 Controller의 전체 �
 #### `SwordMaster_SlashAttack`
 
 - 현재 콤보 인덱스에 대응하는 Slash 애니메이션과 Attack 파라미터를 동기화하고 이동 속도를 0으로 설정한다.
+- 공격 상태의 `LateUpdate()`에서는 A/D 입력을 처리하지 않아 공격 방향을 고정한다.
 - 공격 중 추가 공격 입력을 버퍼에 저장한다.
 - 애니메이션 종료 시 버퍼가 없으면 콤보를 초기화하고 이동 입력에 따라 Walk 또는 Idle로 돌아간다.
 - 버퍼가 있으면 콤보 인덱스를 증가시키고 코드에서 다음 공격 애니메이션을 직접 재생한다.
@@ -253,7 +256,10 @@ stateDiagram-v2
 
     Jump --> JumpToFall: Y 속도 <= 0
     JumpToFall --> Fall: 애니메이션 종료
-    Fall --> Land: 지면 접촉
+    JumpToFall --> Land: 지면 접촉, 앉기 미입력
+    JumpToFall --> CrouchStart: 지면 접촉, 앉기 유지
+    Fall --> Land: 지면 접촉, 앉기 미입력
+    Fall --> CrouchStart: 지면 접촉, 앉기 유지
     Land --> Walk: 이동 입력 있음
     Land --> Idle: 이동 입력 없음
 

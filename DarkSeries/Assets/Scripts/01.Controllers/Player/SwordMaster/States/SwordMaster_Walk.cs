@@ -34,10 +34,6 @@ public class SwordMaster_Walk : SwordMaster_BaseState
     {
     }
 
-    public override void LateUpdate()
-    {
-    }
-
     public override void Update()
     {
         PlayerInputController input = stateMachine.owner.inputController;

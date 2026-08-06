@@ -34,10 +34,6 @@ public class SwordMaster_Land : SwordMaster_BaseState
     {
     }
 
-    public override void LateUpdate()
-    {
-    }
-
     public override void OnAnimationEnd()
     {
         ChangeToGroundedMovementState();

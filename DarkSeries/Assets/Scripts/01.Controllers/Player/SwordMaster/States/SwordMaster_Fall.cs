@@ -28,14 +28,11 @@ public class SwordMaster_Fall : SwordMaster_BaseState
         PlayerMoveController moveController = stateMachine.owner.moveController;
 
         if (moveController.isGrounded)
-            stateMachine.ChangeState<SwordMaster_Land>();
+            ChangeToLandingState();
     }
 
     public override void FixedUpdate()
     {
     }
 
-    public override void LateUpdate()
-    {
-    }
 }

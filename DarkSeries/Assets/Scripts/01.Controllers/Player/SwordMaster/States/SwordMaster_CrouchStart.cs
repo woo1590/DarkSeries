@@ -28,10 +28,6 @@ public class SwordMaster_CrouchStart : SwordMaster_BaseState
     {
     }
 
-    public override void LateUpdate()
-    {
-    }
-
     public override void Update()
     {
         if (ChangeToAirborneStateIfNeeded())

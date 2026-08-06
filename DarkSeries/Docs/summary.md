@@ -53,11 +53,12 @@ DarkSeries/
   - 상태를 런타임 타입으로 보관하고 `ChangeState<TState>()`로 전환한다.
 - `DarkSeries/Assets/Scripts/01.Controllers/Player/SwordMaster/SwordMaster.cs`
   - 상태를 생성·등록하고 Update/LateUpdate/FixedUpdate를 현재 상태로 전달한다.
-  - 이동 입력과 방향 전환, 물리 이동도 함께 조정한다.
+  - 물리 이동은 FixedUpdate에서 수행하고, 방향 전환은 기본 상태의 LateUpdate에서 `UpdateFacing()` 단일 경로로 수행한다. SlashAttack은 A/D 방향 입력을 처리하지 않는다.
   - 상태 진입 시 Animator 파라미터와 전체 상태 경로를 동기화하고, 유효한 Animation Event만 현재 상태로 전달한다.
 - `DarkSeries/Assets/Scripts/01.Controllers/Player/SwordMaster/States/`
   - Idle, Walk, Run, Jump, JumpToFall, Fall, Land, SlashAttack, CrouchStart/Hold/End 상태가 분리되어 있다.
   - 상태는 매 프레임 입력 스냅샷을 평가하며, Animator 변경은 `SwordMasterAnimData`와 `SwordMaster.SyncAnimation()`에 집중된다.
+  - Crouch 입력을 유지한 채 착지하면 Land를 건너뛰고 CrouchStart로 연결해 동일한 착지/앉기 모션의 중복 재생을 방지한다.
 
 ### Animator 및 애니메이션
 

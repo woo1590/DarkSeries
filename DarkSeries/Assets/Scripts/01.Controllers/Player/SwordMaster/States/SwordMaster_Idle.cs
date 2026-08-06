@@ -27,10 +27,6 @@ public class SwordMaster_Idle : SwordMaster_BaseState
     {
     }
 
-    public override void LateUpdate()
-    {
-    }
-
     public override void Update()
     {
         PlayerInputController input = stateMachine.owner.inputController;

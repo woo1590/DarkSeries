@@ -19,7 +19,11 @@ public class SwordMaster_BaseState : IState<SwordMaster>
     public override void Exit() { }
 
     public override void FixedUpdate() { }
-    public override void LateUpdate() { }
+    public override void LateUpdate()
+    {
+        SwordMaster owner = stateMachine.owner;
+        owner.UpdateFacing(owner.inputController.movementInput.x);
+    }
     public override void Update() { }
 
     protected bool ChangeToAirborneStateIfNeeded()
@@ -43,5 +47,13 @@ public class SwordMaster_BaseState : IState<SwordMaster>
             stateMachine.ChangeState<SwordMaster_Walk>();
         else
             stateMachine.ChangeState<SwordMaster_Idle>();
+    }
+
+    protected void ChangeToLandingState()
+    {
+        if (stateMachine.owner.inputController.crouchIsPressed)
+            stateMachine.ChangeState<SwordMaster_CrouchStart>();
+        else
+            stateMachine.ChangeState<SwordMaster_Land>();
     }
 }

@@ -54,7 +54,6 @@ public class SwordMaster : Player
 
         float direction = inputController.movementInput.x;
 
-        UpdateFacing(direction);
         moveController.Move(direction);
     }
 

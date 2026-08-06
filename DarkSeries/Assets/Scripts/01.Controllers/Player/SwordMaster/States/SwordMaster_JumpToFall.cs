@@ -27,7 +27,7 @@ public class SwordMaster_JumpToFall : SwordMaster_BaseState
     {
         if (stateMachine.owner.moveController.isGrounded)
         {
-            stateMachine.ChangeState<SwordMaster_Land>();
+            ChangeToLandingState();
             return;
         }
 
@@ -36,10 +36,6 @@ public class SwordMaster_JumpToFall : SwordMaster_BaseState
     }
 
     public override void FixedUpdate()
-    {
-    }
-
-    public override void LateUpdate()
     {
     }
 

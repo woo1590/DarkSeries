@@ -40,7 +40,4 @@ public class SwordMaster_Jump : SwordMaster_BaseState
     {
     }
 
-    public override void LateUpdate()
-    {
-    }
 }
